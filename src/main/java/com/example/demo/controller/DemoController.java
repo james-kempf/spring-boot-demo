@@ -3,8 +3,6 @@ package com.example.demo.controller;
 import com.example.demo.model.Greeting;
 import com.example.demo.service.KafkaService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -16,6 +14,9 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicInteger;
 
 @RestController
@@ -58,6 +59,12 @@ public class DemoController {
     public String postMessage(@RequestParam String message) {
         kafkaService.sendMessage(message);
         return "Message Sent: " + message;
+    }
+
+    @GetMapping("/future")
+    public String futureMessage(@RequestParam String message) throws ExecutionException, InterruptedException {
+        Future<String> future = CompletableFuture.completedFuture(message);
+        return future.get();
     }
 
 }
